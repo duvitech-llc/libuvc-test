@@ -1,0 +1,2 @@
+#define libuvctest_VERSION_MAJOR @libuvctest_VERSION_MAJOR@
+#define libuvctest_VERSION_MINOR @libuvctest_VERSION_MINOR@
