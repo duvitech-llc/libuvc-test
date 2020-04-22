@@ -17,7 +17,7 @@ void cb(uvc_frame_t *frame, void *ptr) {
   /* We'll convert the image from YUV/JPEG to BGR, so allocate space */
   bgr = uvc_allocate_frame(frame->width * frame->height * 3);
   if (!bgr) {
-    printf("unable to allocate bgr frame!");
+    std::cout << "unable to allocate bgr frame!" << std::endl;
     return;
   }
   /* Do the BGR conversion */
@@ -27,6 +27,9 @@ void cb(uvc_frame_t *frame, void *ptr) {
     uvc_free_frame(bgr);
     return;
   }
+
+  std::cout << "We Have a frame!" << std::endl;
+
   /* Call a user function:
    *
    * my_type *my_obj = (*my_type) ptr;
@@ -84,7 +87,9 @@ int main (int argc, char *argv[])
         uvc_perror(res, "uvc_init");
         return res;
     }
-    puts("UVC initialized");
+
+    std::cout << "UVC initialized" << std::endl;
+    
     /* Locates the first attached UVC device, stores in dev */
     res = uvc_find_device(
         ctx, &dev,
@@ -93,13 +98,14 @@ int main (int argc, char *argv[])
     if (res < 0) {
         uvc_perror(res, "uvc_find_device"); /* no devices found */
     } else {
-        puts("Device found");
+        std::cout << "Device found" << std::endl;
         /* Try to open the device: requires exclusive access */
         res = uvc_open(dev, &devh);
         if (res < 0) {
         uvc_perror(res, "uvc_open"); /* unable to open device */
         } else {
-        puts("Device opened");
+            
+        std::cout << "Device opened" << std::endl;
         /* Print out a message containing all the information that libuvc
         * knows about the device */
         uvc_print_diag(devh, stderr);
@@ -121,17 +127,18 @@ int main (int argc, char *argv[])
             if (res < 0) {
             uvc_perror(res, "start_streaming"); /* unable to start stream */
             } else {
-            puts("Streaming...");
+            
+            std::cout << "Streaming ...." << std::endl;
             uvc_set_ae_mode(devh, 1); /* e.g., turn on auto exposure */
             sleep(10); /* stream for 10 seconds */
             /* End the stream. Blocks until last callback is serviced */
             uvc_stop_streaming(devh);
-            puts("Done streaming.");
+            std::cout << "Done streaming." << std::endl;
             }
         }
         /* Release our handle on the device */
         uvc_close(devh);
-        puts("Device closed");
+        std::cout << "Device closed" << std::endl;
         }
         /* Release the device descriptor */
         uvc_unref_device(dev);
@@ -140,7 +147,7 @@ int main (int argc, char *argv[])
     /* Close the UVC context. This closes and cleans up any existing device handles,
     * and it closes the libusb context if one was not provided. */
     uvc_exit(ctx);
-    puts("UVC exited");
+    std::cout << "UVC exited" << std::endl;
 
     return 0;
 }
