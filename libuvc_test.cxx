@@ -68,16 +68,22 @@ int main (int argc, char *argv[])
     uvc_device_handle_t *devh;
     uvc_stream_ctrl_t ctrl;
     uvc_error_t res;
+    char *p;
+    int vid = 0;
+    int pid = 0;
 
 
-
-    if (argc < 2) {
+    if (argc < 3) {
         // report version
         std::cout << argv[0] << " Version " << libuvctest_VERSION_MAJOR << "."
                 << libuvctest_VERSION_MINOR << std::endl;
-        std::cout << "Usage: " << argv[0] << " number" << std::endl;
+        std::cout << "Usage: " << argv[0] << " vid pid" << std::endl;
         return 1;
     }
+
+    vid = strtol(argv[1], &p, 10);
+    pid = strtol(argv[2], &p, 10);
+    std::cout << "VID: " << vid << " PID: " << pid << std::endl;
 
     /* Initialize a UVC service context. Libuvc will set up its own libusb
     * context. Replace NULL with a libusb_context pointer to run libuvc
@@ -93,7 +99,7 @@ int main (int argc, char *argv[])
     /* Locates the first attached UVC device, stores in dev */
     res = uvc_find_device(
         ctx, &dev,
-        0, 0, NULL); /* filter devices: vendor_id, product_id, "serial_num" */
+        vid, pid, NULL); /* filter devices: vendor_id, product_id, "serial_num" */
 
     if (res < 0) {
         uvc_perror(res, "uvc_find_device"); /* no devices found */
