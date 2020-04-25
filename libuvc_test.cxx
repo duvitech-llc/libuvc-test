@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -12,23 +13,33 @@
  * quick processing you need, or have it put the frame into your application's
  * input queue. If this function takes too long, you'll start losing frames. */
 void cb(uvc_frame_t *frame, void *ptr) {
-  uvc_frame_t *bgr;
+  uvc_frame_t *bgr = NULL;
   uvc_error_t ret;
-  /* We'll convert the image from YUV/JPEG to BGR, so allocate space */
+/* We'll convert the image from YUV/JPEG to BGR, so allocate space 
   bgr = uvc_allocate_frame(frame->width * frame->height * 3);
   if (!bgr) {
     std::cout << "unable to allocate bgr frame!" << std::endl;
     return;
   }
-  /* Do the BGR conversion */
+*/
+/* Do the BGR conversion 
   ret = uvc_any2bgr(frame, bgr);
   if (ret) {
     uvc_perror(ret, "uvc_any2bgr");
     uvc_free_frame(bgr);
     return;
   }
+*/
+  
+  std::cout << "We Have a frame! "<< frame->data_bytes << " Bytes " << std::endl;
 
-  std::cout << "We Have a frame!" << std::endl;
+  /*
+  std::ofstream myFile ("image.jpg", std::ofstream::out | std::ofstream::binary);
+  myFile.write ((char *)frame->data, frame->data_bytes);
+  myFile.close();
+  exit(0);
+  */
+
 
   /* Call a user function:
    *
@@ -56,7 +67,8 @@ void cb(uvc_frame_t *frame, void *ptr) {
    *
    * cvReleaseImageHeader(&cvImg);
    */
-  uvc_free_frame(bgr);
+  if(bgr = NULL)
+    uvc_free_frame(bgr);
 }
 
 
@@ -115,12 +127,15 @@ int main (int argc, char *argv[])
         /* Print out a message containing all the information that libuvc
         * knows about the device */
         uvc_print_diag(devh, stderr);
+
         /* Try to negotiate a 640x480 30 fps YUYV stream profile */
         res = uvc_get_stream_ctrl_format_size(
             devh, &ctrl, /* result stored in ctrl */
-            UVC_FRAME_FORMAT_YUYV, /* YUV 422, aka YUV 4:2:2. try _COMPRESSED */
+            UVC_FRAME_FORMAT_MJPEG, /* MJPEG. try _COMPRESSED */
             640, 480, 30 /* width, height, fps */
         );
+
+
         /* Print out the result */
         uvc_print_stream_ctrl(&ctrl, stderr);
         if (res < 0) {
